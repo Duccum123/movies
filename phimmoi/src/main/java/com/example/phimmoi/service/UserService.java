@@ -1,0 +1,59 @@
+package com.example.phimmoi.service;
+
+import com.example.phimmoi.dto.request.UserRequest;
+import com.example.phimmoi.dto.response.UserResponse;
+import com.example.phimmoi.entity.User;
+import com.example.phimmoi.exception.AppException;
+import com.example.phimmoi.exception.ErrorCode;
+import com.example.phimmoi.mapper.UserMapper;
+import com.example.phimmoi.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    @Autowired
+    private final UserRepository userRepository;
+    @Autowired
+    private final UserMapper userMapper;
+
+    public UserResponse createUser(UserRequest request) {
+
+        if(userRepository.existsByEmail(request.getEmail()))
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        if(userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        User user = userMapper.toUser(request);
+        user.setEnabled(true);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+    public List<UserResponse> getAllUser() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse).toList();
+    }
+    public UserResponse getUserById(String id) {
+
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    }
+    public UserResponse updateUser(String id, UserRequest request){
+        User userUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        userUpdate.setUsername(request.getUsername());
+        userUpdate.setPassword(request.getPassword());
+        userUpdate.setEmail(request.getEmail());
+        userUpdate.setRole(request.getRole());
+        return userMapper.toUserResponse(userRepository.save(userUpdate));
+    }
+    public UserResponse deleteSoftUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setEnabled(false);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+}
