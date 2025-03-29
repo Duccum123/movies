@@ -7,8 +7,11 @@ import com.example.phimmoi.exception.AppException;
 import com.example.phimmoi.exception.ErrorCode;
 import com.example.phimmoi.mapper.UserMapper;
 import com.example.phimmoi.repository.UserRepository;
+import com.example.phimmoi.service.config.SecurityConfig;
+import com.example.phimmoi.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +23,21 @@ public class UserService {
     private final UserRepository userRepository;
     @Autowired
     private final UserMapper userMapper;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private final JwtUtil jwtUtil;
+
+    public String checkLogin(UserRequest userRequest) {
+        String username  = userRequest.getUsername();
+        String password = userRequest.getPassword();
+
+        User user = userRepository.findByUsername(username);
+        if(passwordEncoder.matches(password, user.getPassword())){
+            return jwtUtil.generateToken(username);
+        }
+        return null;
+    }
 
     public UserResponse createUser(UserRequest request) {
 
@@ -29,6 +47,9 @@ public class UserService {
             throw new AppException(ErrorCode.USERNAME_ALREADY_EXISTS);
         User user = userMapper.toUser(request);
         user.setEnabled(true);
+        // mã hóa mật khẩu trước khi lưu, passwordEncoder.matches(rawPassword, hashedPassword) để so sánh lại mật khẩu đăng nhập và mật khẩu đã mã hóa lưu trong db
+        String hashedPassword  = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
         return userMapper.toUserResponse(userRepository.save(user));
     }
     public List<UserResponse> getAllUser() {
