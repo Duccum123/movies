@@ -1,20 +1,17 @@
 package com.example.phimmoi.dto.request;
 
-
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequest {
 
+public class LoginRequest {
     String username;
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Size(min = 6, max = 20)
     String password;
-    String email;
-    String role;
 }
