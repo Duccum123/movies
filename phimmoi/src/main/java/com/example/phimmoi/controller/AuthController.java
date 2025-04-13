@@ -1,6 +1,7 @@
 package com.example.phimmoi.controller;
 
 import com.example.phimmoi.dto.request.LoginRequest;
+import com.example.phimmoi.dto.response.ApiResponse;
 import com.example.phimmoi.dto.response.JwtResponse;
 import com.example.phimmoi.utils.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,18 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ApiResponse<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
 
         String token = tokenProvider.generateToken(auth);
-        return ResponseEntity.ok(new JwtResponse(token));
+        ApiResponse<JwtResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(new JwtResponse(token));
+        apiResponse.setMessage("token generated");
+        return apiResponse;
     }
 }
 

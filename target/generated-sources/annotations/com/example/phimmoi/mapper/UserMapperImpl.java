@@ -39,7 +39,6 @@ public class UserMapperImpl implements UserMapper {
 
         userResponse.setId( user.getId() );
         userResponse.setUsername( user.getUsername() );
-        userResponse.setPassword( user.getPassword() );
         userResponse.setEmail( user.getEmail() );
         userResponse.setRole( user.getRole() );
         userResponse.setCreated_at( user.getCreated_at() );

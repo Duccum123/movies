@@ -4,6 +4,7 @@ import com.example.phimmoi.entity.User;
 import com.example.phimmoi.exception.AppException;
 import com.example.phimmoi.exception.ErrorCode;
 import com.example.phimmoi.repository.UserRepository;
+import com.example.phimmoi.service.config.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), user.getPassword(), List.of(new SimpleGrantedAuthority("role_" + user.getRole()))
+        return new CustomUserDetails(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
 }

@@ -12,6 +12,5 @@ import lombok.experimental.FieldDefaults;
 
 public class LoginRequest {
     String username;
-    @Size(min = 6, max = 20)
     String password;
 }
