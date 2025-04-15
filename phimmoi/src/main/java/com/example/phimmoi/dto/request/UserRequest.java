@@ -1,9 +1,12 @@
 package com.example.phimmoi.dto.request;
 
 
+import com.example.phimmoi.entity.Role;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Data
 @Builder
@@ -16,5 +19,5 @@ public class UserRequest {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     String password;
     String email;
-    String role;
+    Set<String> roles;
 }

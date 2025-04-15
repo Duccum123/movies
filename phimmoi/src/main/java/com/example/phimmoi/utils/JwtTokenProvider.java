@@ -1,5 +1,6 @@
 package com.example.phimmoi.utils;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
+
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
@@ -45,9 +47,12 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException ex) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtException(null, null , "Expired JWT token");
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("Token không hợp lệ");
         }
+
     }
 }
 

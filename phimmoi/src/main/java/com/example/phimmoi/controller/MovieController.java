@@ -19,28 +19,28 @@ public class MovieController {
     MovieService movieService;
 
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('WRITE_ADMIN')")
     public ApiResponse<MovieResponse> createMovie(@RequestBody MovieRequest request) {
         ApiResponse<MovieResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(movieService.createMovie(request));
         return apiResponse;
     }
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('READ_ADMIN')")
     public ApiResponse<List<MovieResponse>> getAllMovies() {
         ApiResponse<List<MovieResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(movieService.getAllMovies());
         return apiResponse;
     }
     @GetMapping("/getById/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('READ_ADMIN')")
     public ApiResponse<MovieResponse> getMovieById(@PathVariable("id") String id) {
         ApiResponse<MovieResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(movieService.getById(id));
         return apiResponse;
     }
     @DeleteMapping("/deleteSoftById/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('DELETE_ADMIN')")
     public ApiResponse<MovieResponse> deleteSoftById(@PathVariable("id") String id) {
         ApiResponse<MovieResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(movieService.deleteSoftById(id));

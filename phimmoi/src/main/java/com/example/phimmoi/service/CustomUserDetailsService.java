@@ -21,11 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return new CustomUserDetails(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-        );
+        return new CustomUserDetails(user);
     }
 }

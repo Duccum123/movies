@@ -1,6 +1,8 @@
 package com.example.phimmoi.utils;
 
 import com.example.phimmoi.service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            if (jwtTokenProvider.validateToken(token)) {
+            if (!jwtTokenProvider.validateToken(token)) {
+                throw new ExpiredJwtException(null, null, "Token het han");
+            } else {
                 String username = jwtTokenProvider.getUsernameFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

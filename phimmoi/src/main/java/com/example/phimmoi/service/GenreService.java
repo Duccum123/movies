@@ -44,4 +44,10 @@ public class GenreService {
     public void deleteGenre(String id){
         genreRepository.deleteById(id);
     }
+    public GenreResponse deleteSoftGenre(String id){
+        Genre genre = genreRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.GENRE_NOT_FOUND));
+        genre.setEnabled(false);
+        return genreMapper.toGenreResponse(genreRepository.save(genre));
+    }
 }

@@ -21,14 +21,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyAuthority('WRITE_ADMIN')")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(request));
         return apiResponse;
     }
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('READ_ADMIN')")
     ApiResponse<List<UserResponse>> getAllUser() {
         ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getAllUser());
@@ -36,22 +36,22 @@ public class UserController {
     }
 
     @GetMapping("/getUserById/{id}")
-    @PreAuthorize("hasRole('admin') or #id == authentication.principal.id")
+    @PreAuthorize("hasAuthority('READ_ADMIN') or (#id == authentication.principal.id and hasAuthority('READ_USER'))")
     ApiResponse<UserResponse> getUserById(@PathVariable("id") String id) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUserById(id));
         return apiResponse;
     }
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('admin') or #id == authentication.principal.id")
+    @PreAuthorize("hasAuthority('WRITE') or (#id == authentication.principal.id and hasAuthority('READ_USER'))")
     ApiResponse<UserResponse> updateUser(@PathVariable("id") String id, @RequestBody UserRequest request) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.updateUser(id, request));
         return apiResponse;
     }
     @DeleteMapping("/deleteSoftById/{id}")
-    @PreAuthorize("hasRole('admin')")
-    ApiResponse<UserResponse> deleteUser(@PathVariable("id") String id) {
+    @PreAuthorize("hasAuthority('DELETE_ADMIN')")
+    ApiResponse<UserResponse> deleteSoftById(@PathVariable("id") String id) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.deleteSoftUser(id));
         return apiResponse;

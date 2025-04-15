@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "roles", ignore = true)
     User toUser(UserRequest userCreationRequest);
-    @Mapping(source = "id", target = "id")
     UserResponse toUserResponse(User user);
 
 }

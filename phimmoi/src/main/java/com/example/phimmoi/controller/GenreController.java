@@ -18,36 +18,38 @@ public class GenreController {
     public GenreService genreService;
 
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('WRITE_ADMIN')")
     public ApiResponse<GenreResponse> createGenre(@RequestBody GenreRequest request) {
         ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.createGenre(request));
         return apiResponse;
     }
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('READ_ADMIN')")
     public ApiResponse<List<GenreResponse>> getAllGenre() {
         ApiResponse<List<GenreResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.getAll());
         return apiResponse;
     }
     @GetMapping("/getGenreById/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('READ_ADMIN')")
     public ApiResponse<GenreResponse> getGenreById(@PathVariable("id") String id) {
         ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.getById(id));
         return apiResponse;
     }
     @PostMapping("/update/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('WRITE_ADMIN')")
     public ApiResponse<GenreResponse> updateGenre(@PathVariable("id") String id, @RequestBody GenreRequest request) {
         ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.updateGenre(id, request));
         return apiResponse;
     }
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('admin')")
-    public void deleteGenre(@PathVariable("id") String id) {
-        genreService.deleteGenre(id);
+    @DeleteMapping("/deleteSoftById/{id}")
+    @PreAuthorize("hasAuthority('DELETE_ADMIN')")
+    public ApiResponse<GenreResponse> deleteSoftById(@PathVariable("id") String id) {
+        ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(genreService.deleteSoftGenre(id));
+        return apiResponse;
     }
 }

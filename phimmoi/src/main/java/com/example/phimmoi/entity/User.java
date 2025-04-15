@@ -1,12 +1,12 @@
 package com.example.phimmoi.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -21,7 +21,13 @@ public class User {
     String username;
     String password;
     String email;
-    String role;
+    @ManyToMany(fetch = FetchType.EAGER)
+            @JoinTable(
+                    name = "user_roles",
+                    joinColumns = @JoinColumn(name = "user_id"),
+                    inverseJoinColumns = @JoinColumn(name = "role_id")
+            )
+    Set<Role> roles;
     LocalDateTime created_at;
     boolean isEnabled;
     @PrePersist

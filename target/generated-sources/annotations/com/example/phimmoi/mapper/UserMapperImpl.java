@@ -2,7 +2,10 @@ package com.example.phimmoi.mapper;
 
 import com.example.phimmoi.dto.request.UserRequest;
 import com.example.phimmoi.dto.response.UserResponse;
+import com.example.phimmoi.entity.Role;
 import com.example.phimmoi.entity.User;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +27,6 @@ public class UserMapperImpl implements UserMapper {
         user.username( userCreationRequest.getUsername() );
         user.password( userCreationRequest.getPassword() );
         user.email( userCreationRequest.getEmail() );
-        user.role( userCreationRequest.getRole() );
 
         return user.build();
     }
@@ -40,7 +42,10 @@ public class UserMapperImpl implements UserMapper {
         userResponse.setId( user.getId() );
         userResponse.setUsername( user.getUsername() );
         userResponse.setEmail( user.getEmail() );
-        userResponse.setRole( user.getRole() );
+        Set<Role> set = user.getRoles();
+        if ( set != null ) {
+            userResponse.setRoles( new LinkedHashSet<Role>( set ) );
+        }
         userResponse.setCreated_at( user.getCreated_at() );
         userResponse.setEnabled( user.isEnabled() );
 
