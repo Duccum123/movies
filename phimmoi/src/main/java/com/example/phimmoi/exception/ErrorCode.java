@@ -15,6 +15,7 @@ public enum ErrorCode {
     GENRE_NAME_ALREADY_EXISTS(1004, "Genre name already exists"),
     GENRE_NOT_FOUND(1005, "Genre not found"),
     MOVIE_NOT_FOUND(1006, "Movie not found"),
+    UNAUTHENTIVATED(1007, "unauthenticated"),
     ;
     final int code;
     final String message;

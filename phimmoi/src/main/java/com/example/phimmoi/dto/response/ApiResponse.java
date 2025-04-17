@@ -1,14 +1,17 @@
 package com.example.phimmoi.dto.response;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import ch.qos.logback.classic.spi.LoggingEventVO;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Setter
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApiResponse <T> {
+    @Builder.Default
     int code = 1000;
     String message;
     T result;
