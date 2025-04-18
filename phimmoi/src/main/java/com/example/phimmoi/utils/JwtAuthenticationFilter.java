@@ -5,6 +5,7 @@ import com.example.phimmoi.exception.AppException;
 import com.example.phimmoi.exception.ErrorCode;
 import com.example.phimmoi.service.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -74,6 +76,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String json = mapper.writeValueAsString(apiResponse);
 
             response.getWriter().write(json);
+        } catch (ParseException | JOSEException e) {
+            throw new RuntimeException(e);
         }
     }
 }
