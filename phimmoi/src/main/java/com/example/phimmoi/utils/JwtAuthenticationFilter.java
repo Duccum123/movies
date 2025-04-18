@@ -38,8 +38,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String header = request.getHeader("Authorization");
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
-                if (!jwtTokenProvider.validateToken(token)) {
-                    throw new AppException(ErrorCode.UNAUTHENTIVATED);
+                if (!jwtTokenProvider.validateToken(token, false)) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                    response.setContentType("application/json");
+
+                    ApiResponse<String> apiResponse = new ApiResponse<>();
+                    apiResponse.setCode(ErrorCode.UNAUTHENTICATED.getCode());
+                    apiResponse.setMessage(ErrorCode.UNAUTHENTICATED.getMessage());
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    String json = mapper.writeValueAsString(apiResponse);
+                    response.getWriter().write(json);
+                    return;
                 } else {
                     String username = jwtTokenProvider.getUsernameFromToken(token);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);

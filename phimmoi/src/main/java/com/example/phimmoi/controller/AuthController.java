@@ -1,7 +1,7 @@
 package com.example.phimmoi.controller;
 
 import com.example.phimmoi.dto.request.LoginRequest;
-import com.example.phimmoi.dto.request.LogoutRequest;
+import com.example.phimmoi.dto.request.TokenRequest;
 import com.example.phimmoi.dto.response.ApiResponse;
 import com.example.phimmoi.dto.response.JwtResponse;
 import com.example.phimmoi.utils.JwtTokenProvider;
@@ -22,8 +22,6 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
-    @Autowired
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private RestClient.Builder builder;
@@ -35,17 +33,25 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
 
-        String token = tokenProvider.generateToken(auth);
+        String token = jwtTokenProvider.generateToken(auth.getName());
         ApiResponse<JwtResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(new JwtResponse(token));
         apiResponse.setMessage("token generated");
         return apiResponse;
     }
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException,JOSEException {
+    public ApiResponse<Void> logout(@RequestBody TokenRequest request) throws ParseException,JOSEException {
         jwtTokenProvider.logout(request.getToken());
         return ApiResponse.<Void>builder()
                 .build();
+    }
+    @PostMapping("/refresh")
+    public ApiResponse<JwtResponse> refresh(@RequestBody TokenRequest request) throws ParseException, JOSEException, java.text.ParseException {
+        String token = jwtTokenProvider.refreshToken(request.getToken());
+        ApiResponse<JwtResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(new JwtResponse(token));
+        apiResponse.setMessage("token generated");
+        return apiResponse;
     }
 }
 
