@@ -27,6 +27,6 @@ public class MovieResponse {
     String trailer;
     String director;
     LocalDateTime created_at;
-    List<GenreResponse> genreResponses;
+    List<String> genres;
     boolean isEnabled;
 }

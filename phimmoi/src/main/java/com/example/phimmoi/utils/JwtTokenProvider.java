@@ -21,8 +21,8 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider {
     private final String jwtSecret = "mySecretKey12345678901234567890123456789012345678901234567890";
-    private long jwtExpirationMs = 20000; // milliseconds
-    private long refreshExpirationMs = 86400000; // milliseconds
+    private long jwtExpirationMs = 7200000; // milliseconds, 2h
+    private long refreshExpirationMs = 86400000; // milliseconds, 1 day
     @Autowired
     InvalidatedTokenRepository invalidatedTokenRepository;
 
@@ -95,47 +95,4 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject();
     }
-
-
-//    public boolean validateToken(String token, boolean isRefresh) {
-//
-//        try {
-//            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-//
-//            Claims claims = Jwts.parserBuilder()
-//                    .setSigningKey(key)
-//                    .build()
-//                    .parseClaimsJws(token)
-//                    .getBody();
-//
-//            return !invalidatedTokenRepository.existsById(claims.getId());
-//        } catch (ExpiredJwtException e) {
-//            Claims claims = e.getClaims();
-//            long issueAt = claims.getIssuedAt().getTime();
-//
-//            if (isRefresh) {
-//                return new Date().before(new Date(issueAt + refreshExpirationMs)) &&
-//                        !invalidatedTokenRepository.existsById(claims.getId());
-//            }
-//            System.out.println("Token hết hạn.");
-//            return false;
-//
-//        } catch (SecurityException e) {
-//            System.out.println("Token không hợp lệ (security): " + e.getMessage());
-//            return false;
-//
-//        } catch (JwtException e) {
-//            System.out.println("Token không hợp lệ (jwt): " + e.getMessage());
-//            return false;
-//
-//        } catch (IllegalArgumentException e) {
-//            System.out.println("Token null hoặc rỗng: " + e.getMessage());
-//            return false;
-//        } catch (SignatureException e) {
-//            System.out.println("Chữ ký token không hợp lệ: " + e.getMessage());
-//            return false;
-//        }
-//
-//    }
 }
-

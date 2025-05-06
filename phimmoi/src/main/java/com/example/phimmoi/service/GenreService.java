@@ -23,8 +23,7 @@ public class GenreService {
         if(genreRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.GENRE_NAME_ALREADY_EXISTS);
         Genre genre = genreMapper.toGenre(request);
-
-        System.out.println(request.getName());
+        genre.setEnabled(true);
         return genreMapper.toGenreResponse(genreRepository.save(genre));
     }
     public List<GenreResponse> getAll(){
@@ -41,8 +40,10 @@ public class GenreService {
         genreUpdate.setName(request.getName());
         return genreMapper.toGenreResponse(genreRepository.save(genreUpdate));
     }
-    public void deleteGenre(String id){
-        genreRepository.deleteById(id);
+    public String deleteGenre(String id){
+        Genre genre = genreRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.GENRE_NOT_FOUND));
+        genreRepository.delete(genre);
+        return "Genre deleted";
     }
     public GenreResponse deleteSoftGenre(String id){
         Genre genre = genreRepository.findById(id)

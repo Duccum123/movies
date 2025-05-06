@@ -49,7 +49,14 @@ public class UserController {
         apiResponse.setResult(userService.updateUser(id, request));
         return apiResponse;
     }
-    @DeleteMapping("/deleteSoftById/{id}")
+    @DeleteMapping("/deleteById/{id}")
+    @PreAuthorize("hasAuthority('DELETE_ADMIN')")
+    ApiResponse<String> deleteById(@PathVariable("id") String id) {
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.deleteUser(id));
+        return apiResponse;
+    }
+    @GetMapping("/deleteSoftById/{id}")
     @PreAuthorize("hasAuthority('DELETE_ADMIN')")
     ApiResponse<UserResponse> deleteSoftById(@PathVariable("id") String id) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();

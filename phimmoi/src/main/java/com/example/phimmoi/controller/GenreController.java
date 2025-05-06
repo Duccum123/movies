@@ -38,18 +38,25 @@ public class GenreController {
         apiResponse.setResult(genreService.getById(id));
         return apiResponse;
     }
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('WRITE_ADMIN')")
     public ApiResponse<GenreResponse> updateGenre(@PathVariable("id") String id, @RequestBody GenreRequest request) {
         ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.updateGenre(id, request));
         return apiResponse;
     }
-    @DeleteMapping("/deleteSoftById/{id}")
+    @GetMapping("/deleteSoftById/{id}")
     @PreAuthorize("hasAuthority('DELETE_ADMIN')")
     public ApiResponse<GenreResponse> deleteSoftById(@PathVariable("id") String id) {
         ApiResponse<GenreResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(genreService.deleteSoftGenre(id));
+        return apiResponse;
+    }
+    @DeleteMapping("/deleteSoftById/{id}")
+    @PreAuthorize("hasAuthority('DELETE_ADMIN')")
+    public ApiResponse<String> deleteById(@PathVariable("id") String id) {
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(genreService.deleteGenre(id));
         return apiResponse;
     }
 }

@@ -79,4 +79,10 @@ public class UserService {
         user.setEnabled(false);
         return userMapper.toUserResponse(userRepository.save(user));
     }
+    public String deleteUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        userRepository.delete(user);
+        return "User deleted";
+    }
 }

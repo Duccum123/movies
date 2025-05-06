@@ -1,6 +1,7 @@
 package com.example.phimmoi.service;
 
 import com.example.phimmoi.dto.request.MovieRequest;
+import com.example.phimmoi.dto.request.UpdatePosterMovieRequest;
 import com.example.phimmoi.dto.response.GenreResponse;
 import com.example.phimmoi.dto.response.MovieResponse;
 import com.example.phimmoi.entity.Genre;
@@ -34,6 +35,8 @@ public class MovieService {
     GenreService genreService;
     @Autowired
     GenreMapper genreMapper;
+    @Autowired
+    Movie_GenreRepository movieGenreRepository;
 
     public MovieResponse createMovie(MovieRequest request) {
         Movie movie = movieMapper.toMovie(request);
@@ -44,14 +47,12 @@ public class MovieService {
         movieRepository.save(movie);
 
         List<Movie_Genre> movieGenres = new ArrayList<>();
-        List<GenreResponse> genreResponses = new ArrayList<>();
         request.getId_genres().forEach(genreId -> {
             Movie_Genre movieGenre = new Movie_Genre();
 
             movieGenre.setMovie(movie);
 
             GenreResponse genreResponse = genreService.getById(genreId);
-            genreResponses.add(genreResponse);
             Genre genre = genreMapper.toGenre(genreResponse);
             movieGenre.setGenre(genre);
 
@@ -62,7 +63,7 @@ public class MovieService {
 
         movie.setMovie_genres(movieGenres);
         MovieResponse movieResponse = movieMapper.toMovieResponse(movie);
-        movieResponse.setGenreResponses(genreResponses);
+        movieResponse.setGenres(movieGenres.stream().map(movieGenre -> movieGenre.getGenre().getName()).collect(Collectors.toList()));
         return movieResponse;
     }
     public List<MovieResponse> getAllMovies() {
@@ -72,24 +73,44 @@ public class MovieService {
 
                     List<GenreResponse> genreResponses = movie.getMovie_genres().stream()
                             .map(movie_genre -> genreMapper.toGenreResponse(movie_genre.getGenre()))
-                            .collect(Collectors.toList());
+                            .toList();
 
-                    movieResponse.setGenreResponses(genreResponses);
+                    movieResponse.setGenres(genreResponses.stream().map(GenreResponse::getName).collect(Collectors.toList()));
                     return movieResponse;
                 })
                 .collect(Collectors.toList());
+    }
+    public List<MovieResponse> getMoviesByIdGenre(String id) {
+        List<Movie_Genre> movieGenres = movie_GenreRepository.findByGenreId(id);
+        List<MovieResponse> movieResponses = new ArrayList<>();
+        for (Movie_Genre movieGenre : movieGenres) {
+            Movie movie = movieRepository.findById(movieGenre.getMovie().getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+            MovieResponse movieResponse = movieMapper.toMovieResponse(movie);
+            movieResponses.add(movieResponse);
+        }
+        return movieResponses;
     }
     public MovieResponse getById(String id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
         MovieResponse movieResponse = movieMapper.toMovieResponse(movie);
-        movieResponse.setGenreResponses(movie.getMovie_genres().stream()
-                .map(movie_genre -> genreMapper.toGenreResponse(movie_genre.getGenre())).toList());
+        movieResponse.setGenres(movie.getMovie_genres().stream().map(movieGenre -> movieGenre.getGenre().getName()).collect(Collectors.toList()));
         return movieResponse;
     }
     public MovieResponse deleteSoftById(String id) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
         movie.setEnabled(false);
          return movieMapper.toMovieResponse(movieRepository.save(movie));
+    }
+    public String deleteById(String id) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        movieRepository.delete(movie);
+        return "movie deleted";
+    }
+    public MovieResponse updatePosterMovie(UpdatePosterMovieRequest request) {
+        Movie movie = movieRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        movie.setPoster(request.getPoster());
+        return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
 }

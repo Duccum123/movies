@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class AuthController {
     @Autowired
     private RestClient.Builder builder;
 
-
+    @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
     @PostMapping("/login")
     public ApiResponse<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
         Authentication auth = authenticationManager.authenticate(
